@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Training RPG</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- =========================
+       HUD (TOP INFO)
+  ========================== -->
+  <div id="hud">
+    <h2>💪 Training RPG</h2>
+
+    <p id="power">Power: 1</p>
+    <p id="coins">Coins: 0</p>
+    <p id="round">Wave 1</p>
+
+    <div id="monsterBox">
+      <p>👹 Monster HP:</p>
+
+      <div id="monsterBarWrap">
+        <div id="monsterBar"></div>
+      </div>
+
+      <p id="monsterHp">0 / 0</p>
+    </div>
+  </div>
+
+  <!-- =========================
+       MAIN ACTION
+  ========================== -->
+  <button id="trainBtn">⚔️ TRAIN</button>
+
+  <!-- =========================
+       LEFT MENU BUTTONS
+  ========================== -->
+  <div id="menuButtons">
+    <button id="statsBtn">📊 Stats</button>
+    <button id="invBtn">🎒 Inventory</button>
+    <button id="skillBtn">🌳 Skill Tree</button>
+  </div>
+
+  <!-- =========================
+       UPGRADE ACTIONS
+  ========================== -->
+  <div id="actions">
+    <button id="upgradeBtn">💪 Upgrade Power (10)</button>
+    <button id="autoBtn">⚡ Upgrade Speed (50)</button>
+  </div>
+
+  <!-- =========================
+       DYNAMIC MENU PANEL
+  ========================== -->
+  <div id="panel"></div>
+
+  <!-- =========================
+       JS MUST BE LAST
+  ========================== -->
+  <script src="game.js"></script>
+
+</body>
+</html>

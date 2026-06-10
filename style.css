@@ -1,0 +1,169 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top, #1a1a1a, #000);
+  color: white;
+  overflow: hidden;
+}
+
+/* =====================
+   HUD (TOP CENTER)
+===================== */
+#hud {
+  text-align: center;
+  margin-top: 20px;
+}
+
+#hud h2 {
+  margin-bottom: 10px;
+}
+
+#monsterBox {
+  margin-top: 10px;
+}
+
+/* MONSTER BAR */
+#monsterBarWrap {
+  width: 220px;
+  height: 18px;
+  background: #333;
+  margin: 5px auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+#monsterBar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #ff2e2e, #ff8c00);
+  transition: width 0.2s ease;
+}
+
+/* =====================
+   TRAIN BUTTON (CENTER)
+===================== */
+#trainBtn {
+  display: block;
+  margin: 20px auto;
+  padding: 15px 25px;
+  font-size: 18px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: linear-gradient(90deg, #ff4d4d, #ff9900);
+  color: white;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+  transition: transform 0.1s;
+}
+
+#trainBtn:active {
+  transform: scale(0.95);
+}
+
+/* =====================
+   LEFT SIDEBAR MENU
+===================== */
+#menuButtons {
+  position: absolute;
+  left: 15px;
+  top: 120px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#menuButtons button {
+  width: 140px;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #222;
+  color: white;
+  transition: 0.2s;
+}
+
+#menuButtons button:hover {
+  background: #444;
+}
+
+/* =====================
+   ACTION BUTTONS
+===================== */
+#actions {
+  position: absolute;
+  left: 15px;
+  top: 300px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#actions button {
+  width: 140px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: #333;
+  color: white;
+  transition: 0.2s;
+}
+
+#actions button:hover {
+  background: #555;
+}
+
+/* =====================
+   RIGHT PANEL (DYNAMIC UI)
+===================== */
+#panel {
+  position: absolute;
+  right: 20px;
+  top: 120px;
+
+  width: 220px;
+  min-height: 150px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 10px;
+  backdrop-filter: blur(6px);
+}
+
+/* PANEL TEXT */
+#panel h3 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+#panel button {
+  width: 100%;
+  margin: 5px 0;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: #222;
+  color: white;
+  cursor: pointer;
+}
+
+#panel button:hover {
+  background: #444;
+}
+
+/* =====================
+   TEXT STYLES
+===================== */
+p {
+  margin: 4px 0;
+}
+
+/* MONSTER HP TEXT */
+#monsterHp {
+  font-size: 14px;
+  opacity: 0.8;
+}

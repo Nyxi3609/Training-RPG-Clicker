@@ -7,7 +7,7 @@ body {
 }
 
 /* =====================
-   HUD (TOP CENTER)
+   HUD
 ===================== */
 #hud {
   text-align: center;
@@ -18,11 +18,22 @@ body {
   margin-bottom: 10px;
 }
 
+/* =====================
+   MONSTER BOX
+===================== */
 #monsterBox {
   margin-top: 10px;
 }
 
-/* MONSTER BAR */
+#monsterName {
+  font-size: 16px;
+  margin-bottom: 5px;
+  color: #ffcc00;
+}
+
+/* =====================
+   MONSTER BAR
+===================== */
 #monsterBarWrap {
   width: 220px;
   height: 18px;
@@ -41,7 +52,7 @@ body {
 }
 
 /* =====================
-   TRAIN BUTTON (CENTER)
+   TRAIN BUTTON
 ===================== */
 #trainBtn {
   display: block;
@@ -62,7 +73,7 @@ body {
 }
 
 /* =====================
-   LEFT SIDEBAR MENU
+   LEFT MENU
 ===================== */
 #menuButtons {
   position: absolute;
@@ -75,7 +86,7 @@ body {
 }
 
 #menuButtons button {
-  width: 140px;
+  width: 150px;
   padding: 10px;
   border: none;
   border-radius: 10px;
@@ -103,7 +114,7 @@ body {
 }
 
 #actions button {
-  width: 140px;
+  width: 150px;
   padding: 10px;
   border-radius: 10px;
   border: none;
@@ -118,14 +129,14 @@ body {
 }
 
 /* =====================
-   RIGHT PANEL (DYNAMIC UI)
+   RIGHT PANEL
 ===================== */
 #panel {
   position: absolute;
   right: 20px;
   top: 120px;
 
-  width: 220px;
+  width: 240px;
   min-height: 150px;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.1);
@@ -156,14 +167,46 @@ body {
 }
 
 /* =====================
-   TEXT STYLES
+   TEXT
 ===================== */
 p {
   margin: 4px 0;
 }
 
-/* MONSTER HP TEXT */
-#monsterHp {
+/* =====================
+   TOAST (POPUP NOTIF)
+===================== */
+#toast {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast-msg {
+  background: rgba(0,0,0,0.8);
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.2);
+  animation: fadeUp 2s ease forwards;
   font-size: 14px;
-  opacity: 0.8;
+}
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
 }

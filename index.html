@@ -7,9 +7,7 @@
 
 <body>
 
-  <!-- =========================
-       HUD (TOP INFO)
-  ========================== -->
+  <!-- HUD -->
   <div id="hud">
     <h2>💪 Training RPG</h2>
 
@@ -18,7 +16,7 @@
     <p id="round">Wave 1</p>
 
     <div id="monsterBox">
-      <p>👹 Monster HP:</p>
+      <p id="monsterName">👹 Monster</p>
 
       <div id="monsterBarWrap">
         <div id="monsterBar"></div>
@@ -28,36 +26,30 @@
     </div>
   </div>
 
-  <!-- =========================
-       MAIN ACTION
-  ========================== -->
+  <!-- MAIN BUTTON -->
   <button id="trainBtn">⚔️ TRAIN</button>
 
-  <!-- =========================
-       LEFT MENU BUTTONS
-  ========================== -->
+  <!-- LEFT MENU -->
   <div id="menuButtons">
     <button id="statsBtn">📊 Stats</button>
     <button id="invBtn">🎒 Inventory</button>
     <button id="skillBtn">🌳 Skill Tree</button>
+    <button id="achBtn">🏆 Achievements</button>
   </div>
 
-  <!-- =========================
-       UPGRADE ACTIONS
-  ========================== -->
+  <!-- UPGRADE BUTTONS -->
   <div id="actions">
     <button id="upgradeBtn">💪 Upgrade Power (10)</button>
     <button id="autoBtn">⚡ Upgrade Speed (50)</button>
   </div>
 
-  <!-- =========================
-       DYNAMIC MENU PANEL
-  ========================== -->
+  <!-- RIGHT PANEL -->
   <div id="panel"></div>
 
-  <!-- =========================
-       JS MUST BE LAST
-  ========================== -->
+  <!-- TOAST POPUPS -->
+  <div id="toast"></div>
+
+  <!-- GAME JS -->
   <script src="game.js"></script>
 
 </body>

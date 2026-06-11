@@ -1,5 +1,3 @@
-alert("JS LOADED");
-
 /* =========================
    PLAYER
 ========================= */
@@ -48,7 +46,7 @@ const stats = {
   monstersKilled: 0,
   crits: 0,
   prestiges: 0,
-  lootDrops: 0
+  achievements: []
 };
 
 /* =========================
@@ -56,6 +54,16 @@ const stats = {
 ========================= */
 let monsterMaxHp = 50;
 let monsterHp = monsterMaxHp;
+
+/* =========================
+   ACHIEVEMENTS
+========================= */
+const achievements = [
+  { id: "first_kill", name: "First Blood", done: false },
+  { id: "ten_kills", name: "Hunter", done: false },
+  { id: "wave_10", name: "Survivor", done: false },
+  { id: "first_crit", name: "Lucky Hit", done: false }
+];
 
 /* =========================
    UI
@@ -66,6 +74,7 @@ const roundText = document.getElementById("round");
 
 const monsterBar = document.getElementById("monsterBar");
 const monsterHpText = document.getElementById("monsterHp");
+const monsterNameText = document.getElementById("monsterName");
 
 const trainBtn = document.getElementById("trainBtn");
 const upgradeBtn = document.getElementById("upgradeBtn");
@@ -74,25 +83,31 @@ const autoBtn = document.getElementById("autoBtn");
 const statsBtn = document.getElementById("statsBtn");
 const invBtn = document.getElementById("invBtn");
 const skillBtn = document.getElementById("skillBtn");
+const achBtn = document.getElementById("achBtn");
 
 const panel = document.getElementById("panel");
+const toast = document.getElementById("toast");
 
 /* =========================
-   FLOATING DAMAGE TEXT
+   TOAST SYSTEM
 ========================= */
-function floatText(text, crit = false) {
-  const el = document.createElement("div");
-  el.textContent = text;
-  el.style.position = "absolute";
-  el.style.left = "50%";
-  el.style.top = "50%";
-  el.style.transform = "translate(-50%, -50%)";
-  el.style.color = crit ? "gold" : "white";
-  el.style.fontSize = "18px";
-  el.style.pointerEvents = "none";
-  document.body.appendChild(el);
+function showToast(msg) {
+  const div = document.createElement("div");
+  div.className = "toast-msg";
+  div.textContent = msg;
+  toast.appendChild(div);
 
-  setTimeout(() => el.remove(), 500);
+  setTimeout(() => div.remove(), 2000);
+}
+
+/* =========================
+   MONSTER NAMES
+========================= */
+function getMonsterName() {
+  const names = ["Goblin", "Slime", "Skeleton", "Orc", "Wolf"];
+  let base = names[Math.floor(Math.random() * names.length)];
+
+  return bossWave ? "😈 Demon Lord " + base : base;
 }
 
 /* =========================
@@ -105,7 +120,11 @@ function getDamage() {
 
   if (Math.random() < critRoll) {
     stats.crits++;
-    floatText("CRIT!", true);
+
+    if (!achievements.find(a => a.id === "first_crit").done) {
+      unlockAchievement("first_crit");
+    }
+
     return Math.floor(dmg * critMultiplier);
   }
 
@@ -116,7 +135,11 @@ function damageMonster(dmg) {
   monsterHp -= dmg;
   stats.totalDamage += dmg;
 
-  floatText("-" + dmg);
+  if (stats.monstersKilled === 0 && monsterHp <= 0) {
+    unlockAchievement("first_kill");
+  }
+
+  showToast("-" + dmg);
 
   if (monsterHp <= 0) killMonster();
 
@@ -124,18 +147,19 @@ function damageMonster(dmg) {
 }
 
 /* =========================
-   MONSTER DEATH + LOOT
+   MONSTER DEATH
 ========================= */
 function killMonster() {
   stats.monstersKilled++;
 
   let reward = bossWave ? 120 + wave * 10 : 10 + wave * 2;
-
   reward += skills.income * 5;
 
   coins += reward;
 
-  tryLootDrop();
+  if (stats.monstersKilled === 10) unlockAchievement("ten_kills");
+
+  tryLoot();
 
   nextWave();
 }
@@ -143,27 +167,26 @@ function killMonster() {
 /* =========================
    LOOT SYSTEM
 ========================= */
-function tryLootDrop() {
+function tryLoot() {
   let chance = bossWave ? 0.6 : 0.2;
 
   if (Math.random() < chance) {
-    stats.lootDrops++;
-
     let loot = weapons[Math.floor(Math.random() * weapons.length)];
-
-    floatText("LOOT: " + loot.name, true);
-
     weapon = loot;
+
+    showToast("🎁 Loot: " + loot.name);
   }
 }
 
 /* =========================
-   NEXT WAVE
+   WAVE SYSTEM
 ========================= */
 function nextWave() {
   wave++;
 
   bossWave = wave % 5 === 0;
+
+  if (wave === 10) unlockAchievement("wave_10");
 
   monsterMaxHp = bossWave
     ? 300 + wave * 35
@@ -171,49 +194,47 @@ function nextWave() {
 
   monsterHp = monsterMaxHp;
 
-  if (wave % 3 === 0) skillPoints++;
+  monsterNameText.textContent = getMonsterName();
 
   updateUI();
 }
 
 /* =========================
-   TRAIN
+   ACHIEVEMENTS
 ========================= */
-trainBtn.onclick = () => {
-  damageMonster(getDamage());
-};
+function unlockAchievement(id) {
+  let ach = achievements.find(a => a.id === id);
+
+  if (ach && !ach.done) {
+    ach.done = true;
+
+    showToast("🏆 Achievement: " + ach.name);
+  }
+}
 
 /* =========================
-   POWER UPGRADE
+   BUTTONS
 ========================= */
+trainBtn.onclick = () => damageMonster(getDamage());
+
 upgradeBtn.onclick = () => {
   if (coins >= powerCost) {
     coins -= powerCost;
     power++;
-
     powerCost = Math.floor(powerCost * 1.35);
-
     updateUI();
   }
 };
 
-/* =========================
-   SPEED UPGRADE
-========================= */
 autoBtn.onclick = () => {
   if (coins >= speedCost) {
     coins -= speedCost;
     speed++;
-
     speedCost = Math.floor(speedCost * 1.5);
-
     updateUI();
   }
 };
 
-/* =========================
-   AUTO DAMAGE
-========================= */
 setInterval(() => {
   if (speed > 0) damageMonster(speed);
 }, 1000);
@@ -227,12 +248,6 @@ statsBtn.onclick = () => {
     <p>Kills: ${stats.monstersKilled}</p>
     <p>Damage: ${stats.totalDamage}</p>
     <p>Crits: ${stats.crits}</p>
-    <p>Loot: ${stats.lootDrops}</p>
-    <p>Prestiges: ${stats.prestiges}</p>
-
-    <hr>
-
-    <button onclick="prestige()">Prestige (Wave 20+)</button>
   `;
 };
 
@@ -240,11 +255,7 @@ invBtn.onclick = () => {
   let html = `<h3>🎒 Inventory</h3><p>${weapon.name}</p>`;
 
   weapons.forEach((w, i) => {
-    html += `
-      <button onclick="buyWeapon(${i})">
-        ${w.name} (${w.rarity})
-      </button>
-    `;
+    html += `<button onclick="buyWeapon(${i})">${w.name}</button>`;
   });
 
   panel.innerHTML = html;
@@ -253,12 +264,20 @@ invBtn.onclick = () => {
 skillBtn.onclick = () => {
   panel.innerHTML = `
     <h3>🌳 Skill Tree</h3>
-    <p>Points: ${skillPoints}</p>
-
-    <button onclick="upgradeSkill('strength')">Strength</button>
-    <button onclick="upgradeSkill('crit')">Crit</button>
-    <button onclick="upgradeSkill('income')">Income</button>
+    <p>Strength: ${skills.strength}</p>
+    <p>Crit: ${skills.crit}</p>
+    <p>Income: ${skills.income}</p>
   `;
+};
+
+achBtn.onclick = () => {
+  let html = `<h3>🏆 Achievements</h3>`;
+
+  achievements.forEach(a => {
+    html += `<p>${a.done ? "✅" : "⬜"} ${a.name}</p>`;
+  });
+
+  panel.innerHTML = html;
 };
 
 /* =========================
@@ -276,53 +295,7 @@ function buyWeapon(i) {
 window.buyWeapon = buyWeapon;
 
 /* =========================
-   SKILLS
-========================= */
-function upgradeSkill(s) {
-  if (skillPoints <= 0) return;
-
-  skillPoints--;
-
-  skills[s]++;
-
-  updateUI();
-}
-window.upgradeSkill = upgradeSkill;
-
-/* =========================
-   PRESTIGE
-========================= */
-function prestige() {
-  if (wave < 20) {
-    alert("Need Wave 20 to Prestige 😭");
-    return;
-  }
-
-  stats.prestiges++;
-
-  power = 1;
-  speed = 0;
-
-  powerCost = 10;
-  speedCost = 50;
-
-  coins = 0;
-
-  critChance += 0.05;
-
-  wave = 1;
-
-  weapon = weapons[0];
-
-  monsterHp = 50;
-  monsterMaxHp = 50;
-
-  updateUI();
-}
-window.prestige = prestige;
-
-/* =========================
-   UI
+   UI UPDATE
 ========================= */
 function updateUI() {
   powerText.textContent = `Power: ${power} (${weapon.name})`;
@@ -337,12 +310,10 @@ function updateUI() {
 
   monsterBar.style.width =
     (monsterHp / monsterMaxHp) * 100 + "%";
-
-  upgradeBtn.textContent = `💪 Upgrade Power (${powerCost})`;
-  autoBtn.textContent = `⚡ Upgrade Speed (${speedCost})`;
 }
 
 /* =========================
    START
 ========================= */
+monsterNameText.textContent = getMonsterName();
 updateUI();

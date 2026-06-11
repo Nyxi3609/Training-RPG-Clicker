@@ -78,7 +78,7 @@ const panel = document.getElementById("panel");
 const toast = document.getElementById("toast");
 
 /* =========================
-   TOAST
+   TOAST SYSTEM
 ========================= */
 function showToast(msg) {
   const div = document.createElement("div");
@@ -109,6 +109,7 @@ function getDamage() {
 
   if (Math.random() < critRoll) {
     stats.crits++;
+    showToast("💥 CRIT!");
     return Math.floor(dmg * critMultiplier);
   }
 
@@ -165,36 +166,29 @@ function nextWave() {
 }
 
 /* =========================
-   TRAIN BUTTON
+   TRAIN
 ========================= */
 trainBtn.onclick = () => {
   damageMonster(getDamage());
 };
 
 /* =========================
-   POWER UPGRADE
+   UPGRADES
 ========================= */
 upgradeBtn.onclick = () => {
   if (coins >= powerCost) {
     coins -= powerCost;
     power++;
-
     powerCost = Math.floor(powerCost * 1.35);
-
     updateUI();
   }
 };
 
-/* =========================
-   SPEED UPGRADE
-========================= */
 autoBtn.onclick = () => {
   if (coins >= speedCost) {
     coins -= speedCost;
     speed++;
-
     speedCost = Math.floor(speedCost * 1.5);
-
     updateUI();
   }
 };
@@ -209,7 +203,7 @@ setInterval(() => {
 }, 1000);
 
 /* =========================
-   SKILL TREE FIXED
+   SKILL TREE
 ========================= */
 function upgradeSkill(type) {
   if (skillPoints <= 0) {
@@ -223,10 +217,30 @@ function upgradeSkill(type) {
   if (type === "crit") skills.crit++;
   if (type === "income") skills.income++;
 
-  showToast("⬆️ Upgraded!");
+  showToast("⬆️ Skill upgraded!");
 }
 
 window.upgradeSkill = upgradeSkill;
+
+/* =========================
+   ACHIEVEMENTS (FIXED)
+========================= */
+achBtn.onclick = () => {
+  let html = `<h3>🏆 Achievements</h3>`;
+
+  const list = [
+    { name: "First Blood", check: stats.monstersKilled >= 1 },
+    { name: "Hunter (10 Kills)", check: stats.monstersKilled >= 10 },
+    { name: "Wave 10", check: wave >= 10 },
+    { name: "Crit Master", check: stats.crits >= 5 }
+  ];
+
+  list.forEach(a => {
+    html += `<p>${a.check ? "✅" : "⬜"} ${a.name}</p>`;
+  });
+
+  panel.innerHTML = html;
+};
 
 /* =========================
    MENUS
@@ -265,7 +279,7 @@ invBtn.onclick = () => {
 };
 
 /* =========================
-   UI UPDATE (FIXED COST DISPLAY)
+   UI UPDATE
 ========================= */
 function updateUI() {
   powerText.textContent = `Power: ${power} (${weapon.name})`;
@@ -281,7 +295,6 @@ function updateUI() {
   monsterBar.style.width =
     (monsterHp / monsterMaxHp) * 100 + "%";
 
-  // 🔥 FIX: COSTS NOW UPDATE VISUALLY
   upgradeBtn.textContent = `💪 Upgrade Power (${powerCost})`;
   autoBtn.textContent = `⚡ Upgrade Speed (${speedCost})`;
 }

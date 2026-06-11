@@ -20,11 +20,11 @@ let skillPoints = 0;
    WEAPONS
 ========================= */
 const weapons = [
-  { name: "Fists", bonus: 0, cost: 0, rarity: "Common" },
-  { name: "Gloves", bonus: 2, cost: 50, rarity: "Common" },
-  { name: "Sword", bonus: 5, cost: 150, rarity: "Rare" },
-  { name: "Great Axe", bonus: 10, cost: 400, rarity: "Epic" },
-  { name: "Dragon Blade", bonus: 25, cost: 1500, rarity: "Legendary" }
+  { name: "Fists", bonus: 0, cost: 0 },
+  { name: "Gloves", bonus: 2, cost: 50 },
+  { name: "Sword", bonus: 5, cost: 150 },
+  { name: "Great Axe", bonus: 10, cost: 400 },
+  { name: "Dragon Blade", bonus: 25, cost: 1500 }
 ];
 
 let weapon = weapons[0];
@@ -45,8 +45,7 @@ const stats = {
   totalDamage: 0,
   monstersKilled: 0,
   crits: 0,
-  prestiges: 0,
-  achievements: []
+  prestiges: 0
 };
 
 /* =========================
@@ -56,17 +55,7 @@ let monsterMaxHp = 50;
 let monsterHp = monsterMaxHp;
 
 /* =========================
-   ACHIEVEMENTS
-========================= */
-const achievements = [
-  { id: "first_kill", name: "First Blood", done: false },
-  { id: "ten_kills", name: "Hunter", done: false },
-  { id: "wave_10", name: "Survivor", done: false },
-  { id: "first_crit", name: "Lucky Hit", done: false }
-];
-
-/* =========================
-   UI
+   UI ELEMENTS
 ========================= */
 const powerText = document.getElementById("power");
 const coinsText = document.getElementById("coins");
@@ -89,7 +78,7 @@ const panel = document.getElementById("panel");
 const toast = document.getElementById("toast");
 
 /* =========================
-   TOAST SYSTEM
+   TOAST
 ========================= */
 function showToast(msg) {
   const div = document.createElement("div");
@@ -101,13 +90,13 @@ function showToast(msg) {
 }
 
 /* =========================
-   MONSTER NAMES
+   MONSTER NAME
 ========================= */
 function getMonsterName() {
   const names = ["Goblin", "Slime", "Skeleton", "Orc", "Wolf"];
   let base = names[Math.floor(Math.random() * names.length)];
 
-  return bossWave ? "😈 Demon Lord " + base : base;
+  return bossWave ? "😈 Demon " + base : base;
 }
 
 /* =========================
@@ -120,11 +109,6 @@ function getDamage() {
 
   if (Math.random() < critRoll) {
     stats.crits++;
-
-    if (!achievements.find(a => a.id === "first_crit").done) {
-      unlockAchievement("first_crit");
-    }
-
     return Math.floor(dmg * critMultiplier);
   }
 
@@ -134,10 +118,6 @@ function getDamage() {
 function damageMonster(dmg) {
   monsterHp -= dmg;
   stats.totalDamage += dmg;
-
-  if (stats.monstersKilled === 0 && monsterHp <= 0) {
-    unlockAchievement("first_kill");
-  }
 
   showToast("-" + dmg);
 
@@ -157,36 +137,16 @@ function killMonster() {
 
   coins += reward;
 
-  if (stats.monstersKilled === 10) unlockAchievement("ten_kills");
-
-  tryLoot();
-
   nextWave();
 }
 
 /* =========================
-   LOOT SYSTEM
-========================= */
-function tryLoot() {
-  let chance = bossWave ? 0.6 : 0.2;
-
-  if (Math.random() < chance) {
-    let loot = weapons[Math.floor(Math.random() * weapons.length)];
-    weapon = loot;
-
-    showToast("🎁 Loot: " + loot.name);
-  }
-}
-
-/* =========================
-   WAVE SYSTEM
+   NEXT WAVE
 ========================= */
 function nextWave() {
   wave++;
 
   bossWave = wave % 5 === 0;
-
-  if (wave === 10) unlockAchievement("wave_10");
 
   monsterMaxHp = bossWave
     ? 300 + wave * 35
@@ -196,48 +156,77 @@ function nextWave() {
 
   monsterNameText.textContent = getMonsterName();
 
+  if (wave % 3 === 0) {
+    skillPoints++;
+    showToast("🌳 Skill Point +1");
+  }
+
   updateUI();
 }
 
 /* =========================
-   ACHIEVEMENTS
+   TRAIN BUTTON
 ========================= */
-function unlockAchievement(id) {
-  let ach = achievements.find(a => a.id === id);
-
-  if (ach && !ach.done) {
-    ach.done = true;
-
-    showToast("🏆 Achievement: " + ach.name);
-  }
-}
+trainBtn.onclick = () => {
+  damageMonster(getDamage());
+};
 
 /* =========================
-   BUTTONS
+   POWER UPGRADE
 ========================= */
-trainBtn.onclick = () => damageMonster(getDamage());
-
 upgradeBtn.onclick = () => {
   if (coins >= powerCost) {
     coins -= powerCost;
     power++;
+
     powerCost = Math.floor(powerCost * 1.35);
+
     updateUI();
   }
 };
 
+/* =========================
+   SPEED UPGRADE
+========================= */
 autoBtn.onclick = () => {
   if (coins >= speedCost) {
     coins -= speedCost;
     speed++;
+
     speedCost = Math.floor(speedCost * 1.5);
+
     updateUI();
   }
 };
 
+/* =========================
+   AUTO DAMAGE
+========================= */
 setInterval(() => {
-  if (speed > 0) damageMonster(speed);
+  if (speed > 0) {
+    damageMonster(speed);
+  }
 }, 1000);
+
+/* =========================
+   SKILL TREE FIXED
+========================= */
+function upgradeSkill(type) {
+  if (skillPoints <= 0) {
+    showToast("No skill points!");
+    return;
+  }
+
+  skillPoints--;
+
+  if (type === "strength") skills.strength++;
+  if (type === "crit") skills.crit++;
+  if (type === "income") skills.income++;
+
+  showToast("⬆️ Upgraded!");
+}
+
+window.upgradeSkill = upgradeSkill;
 
 /* =========================
    MENUS
@@ -251,58 +240,39 @@ statsBtn.onclick = () => {
   `;
 };
 
-invBtn.onclick = () => {
-  let html = `<h3>🎒 Inventory</h3><p>${weapon.name}</p>`;
-
-  weapons.forEach((w, i) => {
-    html += `<button onclick="buyWeapon(${i})">${w.name}</button>`;
-  });
-
-  panel.innerHTML = html;
-};
-
 skillBtn.onclick = () => {
   panel.innerHTML = `
     <h3>🌳 Skill Tree</h3>
+
+    <p>Skill Points: ${skillPoints}</p>
+
     <p>Strength: ${skills.strength}</p>
+    <button onclick="upgradeSkill('strength')">Upgrade</button>
+
     <p>Crit: ${skills.crit}</p>
+    <button onclick="upgradeSkill('crit')">Upgrade</button>
+
     <p>Income: ${skills.income}</p>
+    <button onclick="upgradeSkill('income')">Upgrade</button>
   `;
 };
 
-achBtn.onclick = () => {
-  let html = `<h3>🏆 Achievements</h3>`;
-
-  achievements.forEach(a => {
-    html += `<p>${a.done ? "✅" : "⬜"} ${a.name}</p>`;
-  });
-
-  panel.innerHTML = html;
+invBtn.onclick = () => {
+  panel.innerHTML = `
+    <h3>🎒 Inventory</h3>
+    <p>${weapon.name}</p>
+  `;
 };
 
 /* =========================
-   WEAPONS
-========================= */
-function buyWeapon(i) {
-  let w = weapons[i];
-
-  if (coins >= w.cost) {
-    coins -= w.cost;
-    weapon = w;
-    updateUI();
-  }
-}
-window.buyWeapon = buyWeapon;
-
-/* =========================
-   UI UPDATE
+   UI UPDATE (FIXED COST DISPLAY)
 ========================= */
 function updateUI() {
   powerText.textContent = `Power: ${power} (${weapon.name})`;
   coinsText.textContent = `Coins: ${coins}`;
 
   roundText.textContent = bossWave
-    ? `😈 BOSS Wave ${wave}`
+    ? `😈 Boss Wave ${wave}`
     : `Wave ${wave}`;
 
   monsterHpText.textContent =
@@ -310,6 +280,10 @@ function updateUI() {
 
   monsterBar.style.width =
     (monsterHp / monsterMaxHp) * 100 + "%";
+
+  // 🔥 FIX: COSTS NOW UPDATE VISUALLY
+  upgradeBtn.textContent = `💪 Upgrade Power (${powerCost})`;
+  autoBtn.textContent = `⚡ Upgrade Speed (${speedCost})`;
 }
 
 /* =========================
